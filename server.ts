@@ -10,7 +10,7 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = createServer((req, res) => {
     const parsedUrl = parse(req.url!, true);
-    if (parsedUrl.pathname?.startsWith('/api/socketio')) {
+    if (parsedUrl.pathname?.startsWith('/socket.io/')) {
       res.writeHead(200, {
         'Content-Type': 'text/plain',
       });
