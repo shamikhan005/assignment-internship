@@ -1,5 +1,7 @@
 # assignment 
 
+https://github.com/user-attachments/assets/773709bc-5b5c-4cd2-bc85-db6498738a37
+
 ### tech stack:
 
 - next.js
