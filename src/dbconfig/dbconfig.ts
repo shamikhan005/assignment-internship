@@ -24,6 +24,7 @@ if (!cached) {
 }
 
 export async function connect() {
+  console.log('Attempting to connect to MongoDB with URI:', MONGODB_URI);
   if (cached.conn) {
     return cached.conn;
   }
@@ -38,6 +39,9 @@ export async function connect() {
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
       console.log('MongoDB connected successfully');
       return mongoose;
+    }).catch((err) => {
+      console.error('initial mongodb connection error:', err);
+      throw err;
     });
   }
 
