@@ -5,6 +5,8 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { initSocket } from "@/utils/socket";
 import { getSocketServer } from "@/server/socketio";
+import { Socket } from "socket.io-client";
+
 
 interface ConnectionRequest {
   _id: string;
