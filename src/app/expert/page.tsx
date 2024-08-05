@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { io, Socket } from "socket.io-client";
+import { initSocket } from "@/utils/socket";
 import { getSocketServer } from "@/server/socketio";
 
 interface ConnectionRequest {
@@ -35,33 +35,41 @@ export default function ExpertDashboard() {
       return;
     }
 
-    const socket = io({
-      path: '/socket.io/',
-      query: { userId }
-    });
-    socketRef.current = socket;
+    const initializeSocket = async () => {
+      try {
+        const socket = await initSocket(userId);
+        socketRef.current = socket;
 
-    socket.on('connect', () => {
-      console.log('Socket connected successfully');
-    });
+        socket.on('connect', () => {
+          console.log('Socket connected successfully', socket.id);
+        });
 
-    socket.on('connection-accepted', (data) => {
-      console.log('Received connection-accepted event:', data);
-      if (data && data.roomId) {
-        console.log('Redirecting to:', `/chat/${data.roomId}`);
-        router.push(`/chat/${data.roomId}`);
-      } else {
-        console.error('Invalid data received for connection-accepted event:', data);
+        socket.on('connection-accepted', (data) => {
+          console.log('Received connection-accepted event:', data);
+          if (data && data.roomId) {
+            console.log('Redirecting to:', `/chat/${data.roomId}`);
+            router.push(`/chat/${data.roomId}`);
+          } else {
+            console.error('Invalid data received for connection-accepted event:', data);
+          }
+        });
+
+        socket.on('disconnect', () => {
+          console.log('Socket disconnected');
+        });
+
+      } catch (error) {
+        console.error('Error initializing socket:', error);
       }
-    });
+    };
 
-    socket.on('disconnect', () => {
-      console.log('Socket disconnected');
-    });
+    initializeSocket();
 
     return () => {
-      socket.disconnect();
-      console.log('Socket disconnected');
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        console.log('Socket disconnected');
+      }
     };
   }, [router]);
 
