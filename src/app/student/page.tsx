@@ -29,31 +29,45 @@ export default function StudentDashboard() {
 
     console.log('Initializing socket connection');
     const userId = localStorage.getItem("userId");
-    const socket = await initSocket(userId);
-    socketRef.current = socket;
 
-    socket.on('connect', () => {
-      console.log('Socket connected successfully');
-    });
+     const initializeSocket = async () => {
+      try {
+      const socket = await initSocket();
+      socketRef.current = socket;
 
-    socket.on('connection-accepted', (data) => {
-      console.log('Received connection-accepted event:', data);
-      if (data && data.roomId) {
-        console.log('Redirecting to:', `/chat/${data.roomId}`);
-        router.push(`/chat/${data.roomId}`);
-      } else {
-        console.error('Invalid data received for connection-accepted event:', data);
-      }
-    });
+      socket.on('connect', () => {
+        console.log('Socket connected successfully', socket.id);
+      });
 
-    socket.on('disconnect', () => {
+      socket.on('connection-accepted', (data) => {
+        console.log('Received connection-accepted event:', data);
+        if (data && data.roomId) {
+          console.log('Redirecting to:', `/chat/${data.roomId}`);
+          router.push(`/chat/${data.roomId}`);
+        } else {
+          console.error('Invalid data received for connection-accepted event:', data);
+        }
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Socket disconnected');
+      });
+
+      socket.emit('set-user-id', userId);
+
+    } catch (error) {
+      console.error('Error initializing socket:', error);
+    }
+  };
+
+  initializeSocket();
+
+  return () => {
+    if (socketRef.current) {
+      socketRef.current.disconnect();
       console.log('Socket disconnected');
-    });
-
-    return () => {
-      socket.disconnect();
-      console.log('Socket disconnected');
-    };
+    }
+   };
   }, [router]);
 
   const fetchExperts = async () => {
