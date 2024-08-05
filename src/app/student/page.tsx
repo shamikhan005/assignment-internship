@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { io, Socket } from "socket.io-client";
+import { initSocket } from "@/utils/socket";
 import { getSocketServer } from "@/server/socketio";
 
 interface Expert {
@@ -29,10 +29,7 @@ export default function StudentDashboard() {
 
     console.log('Initializing socket connection');
     const userId = localStorage.getItem("userId");
-    const socket = io({
-      path: '/socket.io/',
-      query: { userId }
-    });
+    const socket = await initSocket(userId);
     socketRef.current = socket;
 
     socket.on('connect', () => {
