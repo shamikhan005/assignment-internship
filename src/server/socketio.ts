@@ -4,11 +4,13 @@ import Message from '@/models/Message';
 
 let io: SocketIOServer | null = null;
 
-const pendingRequests = new Map();
+const pendingRequests = new Map<string, { studentSocket: Socket, studentId: string }>();
 
 export function initSocketServer(server: HttpServer): SocketIOServer {
   if (!io) {
-    io = new SocketIOServer(server);
+    io = new SocketIOServer(server, {
+      path: '/socket.io/',
+    });
     io.on('connection', (socket: Socket) => {
       console.log('New client connected');
 
