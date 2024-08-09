@@ -18,7 +18,7 @@ app.prepare().then(() => {
     path: '/socket.io/',
   });
 
-  initSocketServer(io);
+  initSocketServer(io as any);
 
   server.listen(3000, (err?: Error) => {
     if (err) throw err;
